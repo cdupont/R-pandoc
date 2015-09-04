@@ -12,11 +12,7 @@ Install R:
 Create an input file called `demo.md` with the following text:
 
 ``` R
-<<<<<<< HEAD
 ~~~ {.R}
-=======
-\``` {.R}
->>>>>>> 956840e5e124d5cbb32c6e7b329fb1314ca4c9ba
 Here is a nice plot:
 require(stats)
 D = 150
@@ -25,11 +21,7 @@ t = seq(0, 80, 0.01)
 x = -D*exp(-(t/T))+D
 v = (D/T)*exp(-(t/T))
 plot(t, x, type="l", main="Evolution of position through time", xlab="time (s)", ylab="position (m)", xlim=c(0,80), ylim=c(0, D+10),  xaxs = "i", yaxs = "i")
-<<<<<<< HEAD
 ~~~
-=======
-\```
->>>>>>> 956840e5e124d5cbb32c6e7b329fb1314ca4c9ba
 ```
 
 Now run:
