@@ -23,28 +23,27 @@ renderRPandoc = bottomUpM insertRplots
 
 insertRplots :: Block -> IO Block
 insertRplots block@(CodeBlock (ident, classes, attrs) code) = do
-   hPutStrLn stderr $ "insertRplots: " ++ (show classes)
-   if "R" `elem` classes then do
-      d <- renderRPlot code
-      return $ case d of
-         Nothing     -> block
-         Just imgName -> Plain [Image [] (imgName,"")] -- no alt text, no title
+   hPutStrLn stderr $ "insertRplots classes: " ++ (show classes) ++ " attrs: " ++ (show attrs) ++ " ident: " ++ (show ident)
+   if "Rplot" `elem` classes then do
+      let imgFiles = case (lookup "imgs" attrs) of
+           Just imgs -> [imgs]
+           Nothing   -> ["Rplots.pdf"]
+      d <- renderRPlot code imgFiles
+      return $ if d then Plain (map image imgFiles) else block
    else return block
 insertRplots block = return block
 
+image file = Image [] (file,"")
+
 --plot the R graph
-renderRPlot :: String -> IO (Maybe FilePath)
-renderRPlot rcode = do
+renderRPlot :: String -> [FilePath] -> IO Bool
+renderRPlot rcode imgs = do
    createDirectoryIfMissing True "Rtmp"
    writeFile "Rtmp/plot.R" rcode
-   (e1,_,_) <- readProcessWithExitCode "R" ["CMD", "BATCH", "--no-save", "--quiet", "Rtmp/plot.R"] ""
-   if (e1==ExitSuccess) then do
-      untilM_ (return ()) (doesFileExist "Rplots.pdf")
-      hPutStrLn stderr $  "Rplots.pdf created"
-      (e2,a,b) <- readProcessWithExitCode "convert" ["Rplots.pdf", "Rplot.png"] "" --"-density 150", "-quality 90",
-      hPutStrLn stderr $ "e2: " ++ (show e2)  ++ "a: " ++ (show a)  ++ "b: " ++ (show b)
-      return $ if (e2==ExitSuccess) then (Just "Rplot.png") else Nothing
-   else return Nothing
-   --hPutStrLn stderr $ "e1:" ++ (show e1)
-   --hPutStrLn stderr $ "e2:" ++ (show e2)
-   --return $ if (e1==ExitSuccess && e2==ExitSuccess) then (Just "Rtmp/Rplots.png") else Nothing
+   (code,stdout,stderr) <- readProcessWithExitCode "R" ["CMD", "BATCH", "--no-save", "--quiet", "Rtmp/plot.R"] ""
+   putStrLnErr $ "R exited with: " ++ (show code)
+   putStrLnErr stdout
+   putStrLnErr stderr
+   return $ (code==ExitSuccess)
+
+putStrLnErr = hPutStrLn stderr
