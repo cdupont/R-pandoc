@@ -9,11 +9,11 @@ Install R:
     sudo apt-get install r-base
 
 
-Create an input file called `demo.md` with the following text:
+Create a file called `demo.md` with the following text:
 
 ``` markdown
 Here is a nice plot:
-    ~~~ {.R}
+    ~~~ {.Rplot}
     require(stats)
     D = 150
     T = 10
@@ -31,6 +31,7 @@ Now run:
 
 The file demo.html should now have a nice plot included:
 
+Here is a nice plot:
 ![plot](img/Rplot.png)
 
 
@@ -43,7 +44,7 @@ to be run as a
 shown above.
 
 `R-pandoc` is aware of two code block classes.  A block with
-the `R` class will be replaced by the resulting plot---the code
+the `Rplot` class will be replaced by the resulting plot---the code
 will not appear in the output.  
 
 ## Installing
@@ -54,4 +55,3 @@ will not appear in the output.
     cd R-pandoc
     cabal install
 ```
-
