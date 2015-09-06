@@ -27,7 +27,7 @@ insertRplots block@(CodeBlock (ident, classes, attrs) code) = do
    if "Rplot" `elem` classes then do
       let imgFiles = case (lookup "imgs" attrs) of
            Just imgs -> [imgs]
-           Nothing   -> ["Rplots.pdf"]
+           Nothing   -> ["Rplot.png"]
       d <- renderRPlot code imgFiles
       return $ if d then Plain (map image imgFiles) else block
    else return block
@@ -36,14 +36,15 @@ insertRplots block = return block
 image file = Image [] (file,"")
 
 --plot the R graph
-renderRPlot :: String -> [FilePath] -> IO Bool
-renderRPlot rcode imgs = do
+renderRPlot :: String -> Bool -> IO Bool
+renderRPlot rcode convertDefault = do
    createDirectoryIfMissing True "Rtmp"
    writeFile "Rtmp/plot.R" rcode
    (code,stdout,stderr) <- readProcessWithExitCode "R" ["CMD", "BATCH", "--no-save", "--quiet", "Rtmp/plot.R"] ""
    putStrLnErr $ "R exited with: " ++ (show code)
    putStrLnErr stdout
    putStrLnErr stderr
+   when convertDefault $ void $ readProcessWithExitCode "convert" ["Rplots.pdf", "Rplot.png"]
    return $ (code==ExitSuccess)
 
 putStrLnErr = hPutStrLn stderr
