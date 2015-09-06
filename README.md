@@ -32,6 +32,7 @@ Now run:
 The file demo.html should now have a nice plot included:
 
 Here is a nice plot:
+
 ![plot](img/Rplot.png)
 
 
