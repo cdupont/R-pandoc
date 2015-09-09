@@ -1,6 +1,6 @@
 Here is a plot of a function:
 
-``` {.Rplot imgs=toto.png}
+``` {.Rplot files=toto.png}
 require(stats)
 D = 150
 T = 10
