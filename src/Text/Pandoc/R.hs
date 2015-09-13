@@ -7,7 +7,6 @@ import           Control.Monad
 import           Data.List           (delete)
 import           Data.List.Split
 import           Data.Maybe
-import           Options.Applicative
 import           System.Directory    (createDirectoryIfMissing, doesFileExist, removeFile, renameFile)
 import           System.Exit         (ExitCode (..))
 import           System.FilePath     ((<.>), (</>), pathSeparator)
@@ -28,7 +27,7 @@ renderRPandoc f p = bottomUpM (insertRplots f) p
 
 insertRplots :: FilePath -> Block -> IO Block
 insertRplots outDir block@(CodeBlock (ident, classes, attrs) code) = do
-   hPutStrLn stderr $ "insertRplots classes: " ++ (show classes) ++ " attrs: " ++ (show attrs) ++ " ident: " ++ (show ident)
+   --hPutStrLn stderr $ "insertRplots classes: " ++ (show classes) ++ " attrs: " ++ (show attrs) ++ " ident: " ++ (show ident)
    if rClass `elem` classes then do
       let imgFiles = case lookup fileAttr attrs of
            Just is -> splitOn "," is
@@ -51,9 +50,10 @@ renderRPlot :: String -> IO Bool
 renderRPlot rcode = do
    writeFile tmpRFile rcode
    (code,stdout,stderr) <- readProcessWithExitCode "R" ["CMD", "BATCH", "--no-save", "--quiet", tmpRFile] ""
-   putStrLnErr $ "R exited with: " ++ (show code)
-   putStrLnErr stdout
-   putStrLnErr stderr
+   when (code /= ExitSuccess) $ do
+      putStrLnErr $ "R exited with: " ++ (show code)
+      putStrLnErr stdout
+      putStrLnErr stderr
    whenM (doesFileExist tmpRFile) $ removeFile tmpRFile
    whenM (doesFileExist "plot.Rout") $ removeFile "plot.Rout"
    return $ (code==ExitSuccess)
