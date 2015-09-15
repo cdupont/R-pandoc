@@ -2,4 +2,4 @@ import           Text.Pandoc.JSON
 import           Text.Pandoc.R
 
 main :: IO ()
-main = toJSONFilter (insertRplots "plots")
+main = toJSONFilter (insertRplots "plots" False)

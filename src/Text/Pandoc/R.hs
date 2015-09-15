@@ -24,36 +24,34 @@ tmpRFile = "plot.R"
 data Echo = Above | Below
    deriving (Read, Show)
 
-renderRPandoc :: FilePath -> Pandoc -> IO Pandoc
-renderRPandoc f p = bottomUpM (insertRplots f) p
+renderRPandoc :: FilePath -> Bool -> Pandoc -> IO Pandoc
+renderRPandoc f absolutePath p = bottomUpM (insertRplots f absolutePath) p
 
-insertRplots :: FilePath -> Block -> IO Block
-insertRplots outDir block@(CodeBlock (ident, classes, attrs) code) = do
-   --hPutStrLn stderr $ "insertRplots classes: " ++ (show classes) ++ " attrs: " ++ (show attrs) ++ " ident: " ++ (show ident)
-   if rClass `elem` classes then do
-      let imgFiles = readImgFiles attrs
-      d <- renderRPlot code
-      when (imgFiles == [defFile]) $ void $ convertDefault
-      imgFiles' <- moveFiles imgFiles outDir
-      let imgBlock = Plain (map insertImage imgFiles')
-      let codeBlock = CodeBlock (ident, "r":delete "Rplot" classes, attrs) code
-      let block' = case readEcho attrs of
-           (Just Above) -> Table [] [AlignLeft] [] [] [[[codeBlock]], [[imgBlock]]]
-           (Just Below) -> Table [] [AlignLeft] [] [] [[[imgBlock]], [[codeBlock]]]
-           Nothing -> imgBlock
-      return $ if d then block' else block
-   else return block
-insertRplots _ block = return block
+insertRplots :: FilePath -> Bool -> Block -> IO Block
+insertRplots outDir absolutePath block@(CodeBlock (ident, classes, attrs) code) | rClass `elem` classes = do
+   let imgFiles = readImgFiles attrs
+   d <- renderRPlot code
+   when (imgFiles == [defFile]) $ void $ convertDefault
+   moveFiles imgFiles outDir
+   let imgFiles' = map ((if absolutePath then pathSeparator : outDir else outDir) </>) imgFiles
+   let imgBlock = Plain (map insertImage imgFiles')
+   let codeBlock = CodeBlock (ident, "r":delete "Rplot" classes, attrs) code
+   let block' = case readEcho attrs of
+        (Just Above) -> Table [] [AlignLeft] [] [] [[[codeBlock]], [[imgBlock]]]
+        (Just Below) -> Table [] [AlignLeft] [] [] [[[imgBlock]], [[codeBlock]]]
+        Nothing -> imgBlock
+   return $ if d then block' else block
+insertRplots _ _ block = return block
 
 readEcho :: [(String, String)] -> Maybe Echo
 readEcho attrs = case lookup "echo" attrs of
-     Just e  -> Just (read e)
-     Nothing -> Nothing
+   Just e  -> Just (read e)
+   Nothing -> Nothing
 
 readImgFiles :: [(String, String)] -> [FilePath]
 readImgFiles attrs = case lookup "files" attrs of
-          Just is -> splitOn "," is
-          Nothing   -> [defFile]
+   Just is -> splitOn "," is
+   Nothing -> [defFile]
 
 insertImage :: FilePath -> Inline
 insertImage file = Image [] (file,"")
@@ -74,11 +72,11 @@ renderRPlot rcode = do
    whenM (doesFileExist "plot.Rout") $ removeFile "plot.Rout"
    return $ (code==ExitSuccess)
 
-moveFiles :: [FilePath] -> FilePath -> IO [FilePath]
+moveFiles :: [FilePath] -> FilePath -> IO ()
 moveFiles files outDir = do
    createDirectoryIfMissing False outDir
    mapM_ (\a -> whenM (doesFileExist a) $ renameFile a (outDir </> a)) files
-   return $ map (outDir </>) files
+
 
 convertDefault :: IO Bool
 convertDefault = do
