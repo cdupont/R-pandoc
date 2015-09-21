@@ -1,9 +1,9 @@
 
-Please note that this repo is work in progress.
-
 [![Build Status](https://travis-ci.org/cdupont/R-pandoc.svg?branch=master)](https://travis-ci.org/cdupont/R-pandoc)
 
 A [pandoc](http://johnmacfarlane.net/pandoc/) filter to embbed R plots inside markdown documents.
+
+See the [Blog post](http://www.corentindupont.info/blog/posts/Programming/2015-09-14-diagrams.html) for more details on usage.
 
 ## Usage
 
@@ -45,9 +45,6 @@ to be run as a
 [pandoc filter](http://johnmacfarlane.net/pandoc/scripting.html) as
 shown above.
 
-`R-pandoc` is aware of two code block classes.  A block with
-the `Rplot` class will be replaced by the resulting plot---the code
-will not appear in the output.  
 
 ## Installing
 
