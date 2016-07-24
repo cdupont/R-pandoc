@@ -54,7 +54,7 @@ readImgFiles attrs = case lookup "files" attrs of
    Nothing -> [defFile]
 
 insertImage :: FilePath -> Inline
-insertImage file = Image [] (file,"")
+insertImage file = Image nullAttr [] (file,"")
 
 --plot the R graph
 --the files created will be the one specified in the R code with commands such as:
