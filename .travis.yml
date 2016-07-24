@@ -1,4 +1,32 @@
-language: haskell
+# Run on the container infrastructure
+sudo: false
 
-ghc:
-  - "7.8"
+language: c
+
+matrix:
+  include:
+    - env: CABALVER=1.24 GHCVER=7.10.3
+      addons:
+        apt:
+          packages:
+            - cabal-install-1.24
+            - ghc-7.10.3
+          sources:
+            - hvr-ghc
+    - env: CABALVER=1.18 GHCVER=7.8.4
+      addons:
+        apt:
+          packages:
+            - cabal-install-1.18
+            - ghc-7.8.4
+          sources:
+            - hvr-ghc
+
+before_install:
+  - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
+
+script:
+  - cabal update && cabal install --only-dependencies
+  - cabal configure --enable-tests && cabal build && cabal test
+
+
