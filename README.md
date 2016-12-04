@@ -52,5 +52,5 @@ shown above.
 ``` shell
     git clone https://github.com/cdupont/R-pandoc.git
     cd R-pandoc
-    cabal install
+    stack install
 ```
