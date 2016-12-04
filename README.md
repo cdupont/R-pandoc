@@ -12,7 +12,7 @@ Install R:
     sudo apt-get install r-base
 
 
-Create a file called `demo.md` with the following text:
+Create a file called [demo.md](demo.md) with the following text:
 
 ``` markdown
 Here is a nice plot:

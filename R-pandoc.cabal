@@ -6,7 +6,7 @@ license: BSD3
 license-file: LICENSE
 maintainer: corentin.dupont@gmail.com
 bug-reports: http://github.com/cdupont/R-pandoc/issues
-synopsis: A pandoc filter to express R plots inside markdown
+description: A pandoc filter to express R plots inside markdown
 category: Text
 author: Corentin Dupont
 extra-source-files: README.md img/Rplot.png
