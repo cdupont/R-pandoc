@@ -1,5 +1,5 @@
 name: R-pandoc
-version: 0.2.1
+version: 0.2.2
 cabal-version: >=1.10
 build-type: Simple
 license: BSD3
@@ -17,11 +17,11 @@ source-repository head
 
 library
     build-depends:
-        base         >=4.6  && <4.9,
-        pandoc-types >=1.12 && <1.13,
+        base         >=4.6  && <4.10,
+        pandoc-types >=1.12 && <1.17,
         directory    >=1.2  && <1.3,
         filepath     >=1.3  && <1.5,
-        process      >=1.2  && <1.3,
+        process      >=1.2  && <1.5,
         split        >=0.2  && <0.3
     exposed-modules: Text.Pandoc.R
     exposed: True
@@ -32,9 +32,9 @@ library
 
 executable R-pandoc
     build-depends:
-        base         >=4.6  && <4.9,
-        pandoc-types >=1.12 && <1.13,
-        R-pandoc     ==0.2.1
+        base         >=4.6  && <4.10,
+        pandoc-types >=1.12 && <1.17,
+        R-pandoc     ==0.2.2
     main-is: src/Main.hs
     buildable: True
     default-language: Haskell2010
